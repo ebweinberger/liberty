@@ -29,10 +29,8 @@ TOTAL_SQFT_N = 0
 #Indecies and their corresponding column headers:
 #  [0]                          [1]                   [2]              [3]                 [4]              [5]
 #"Status"     "Listing Office 1 - Office Code"     "Price"     "Days On Market"     "Approx Sq Ft"     "Status Date"
-i = 0
 csvreader.next()
 for row in csvreader:
-    # print(row[0])
     #Count how many homes are currently for sample
     #If the status of the home is "ACTIVE", it is for sale
     if (row[0] == "ACTIVE"):
@@ -67,7 +65,10 @@ for row in csvreader:
 
 #Calculate average price sold
 AVG_PRICE_SOLD = TOTAL_SOLD_DOLLARS / HOMES_SOLD
+#Calculate average days on market
 AVG_DAYS_ON_MARKET = TOTAL_DAYS_ON_MARKET / HOMES_SOLD
+
+#Print it all out
 print("For Sale: " + str(FOR_SALE))
 print("Under Contract: " + str(UNDER_CONTRACT))
 print("Homes Sold: " + str(HOMES_SOLD))
@@ -76,5 +77,5 @@ print("Highest Price Sold: " + str(HIGHEST_PRICE_SOLD))
 print("Average Sold Price: " + str(AVG_PRICE_SOLD))
 print("Average Days on Market: " + str(AVG_DAYS_ON_MARKET))
 
-
+#Close the csv file
 sample.close()
