@@ -4,7 +4,8 @@ from datetime import datetime
 from datetime import date
 from decimal import Decimal
 
-sample = open('sample.csv')
+FILENAME = 'sample.csv'
+sample = open(FILENAME)
 csvreader = csv.reader(sample)
 
 #Final results variables
@@ -76,6 +77,10 @@ print("Lowest Price Sold: " + str(LOWEST_PRICE_SOLD))
 print("Highest Price Sold: " + str(HIGHEST_PRICE_SOLD))
 print("Average Sold Price: " + str(AVG_PRICE_SOLD))
 print("Average Days on Market: " + str(AVG_DAYS_ON_MARKET))
+
+def getAll():
+    result = [FOR_SALE, UNDER_CONTRACT, HOMES_SOLD, LOWEST_PRICE_SOLD, HIGHEST_PRICE_SOLD, AVG_PRICE_SOLD, AVG_DAYS_ON_MARKET]
+    return result
 
 #Close the csv file
 sample.close()
