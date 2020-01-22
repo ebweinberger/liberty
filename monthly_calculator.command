@@ -9,7 +9,7 @@ from decimal import Decimal
 
 window = Tk()
 window.title("Real Estate Stats")
-window.geometry('350x250')
+window.geometry('350x450')
 
 FILENAME = ""
 filepath = ""
@@ -41,7 +41,8 @@ def go_clicked():
     highest_price_sold.configure(text = "Highest Price Sold: $" + str(result[4]))
     avg_price_sold.configure(text = "Avergae Price Sold: $" + str(result[5]))
     avg_days_on_market.configure(text = "Average Days on Market: " + str(result[6]))
-
+    avg_price_sqft.configure(text = "Average Price per SqFt: " + str(result[7]))
+    avg_sqft.configure(text = "Average SqFt: " + str(result[8]))
 
 
 
@@ -62,6 +63,7 @@ go_button.grid(column=0, row=3)
 chosen_file = Label(window, text="", bg = "white")
 chosen_file.grid(column=1, row=0)
 
+# TODO: Convert labels into text boxes so that copying works
 for_sale = Label(window, text="")
 for_sale.grid(column=0, row=4)
 under_contract = Label(window, text="")
@@ -76,6 +78,10 @@ avg_price_sold = Label(window, text="")
 avg_price_sold.grid(column=0, row=9)
 avg_days_on_market = Label(window, text="")
 avg_days_on_market.grid(column=0, row=10)
+avg_price_sqft = Label(window, text="")
+avg_price_sqft.grid(column=0, row=11)
+avg_sqft = Label(window, text="")
+avg_sqft.grid(column=0, row=12)
 
 
 
@@ -164,13 +170,9 @@ def parse_file(filename, month_entry, year_entry):
     AVG_PRICE_SOLD = TOTAL_SOLD_DOLLARS / HOMES_SOLD
     #Calculate average days on market
     AVG_DAYS_ON_MARKET = TOTAL_DAYS_ON_MARKET / HOMES_SOLD
-    #Calculate average price per sqft method 1
-    print(TOTAL_SOLD_DOLLARS)
-    print(TOTAL_SQFT_DOLLARS)
-    print(TOTAL_SQFT)
-    print(TOTAL_SQFT_DOLLARS/TOTAL_SQFT)
-    #Calculate average price per sqft method 2
-    print((TOTAL_SQFT_DOLLARS/TOTAL_SQFT_N)/(TOTAL_SQFT/TOTAL_SQFT_N))
+
+    AVG_SQFT = TOTAL_SQFT/TOTAL_SQFT_N
+    AVG_PRICE_SQFT = (TOTAL_SQFT_DOLLARS/TOTAL_SQFT)
 
 
     result = [FOR_SALE, UNDER_CONTRACT, HOMES_SOLD, LOWEST_PRICE_SOLD, HIGHEST_PRICE_SOLD, AVG_PRICE_SOLD, AVG_DAYS_ON_MARKET, AVG_PRICE_SQFT, AVG_SQFT]
