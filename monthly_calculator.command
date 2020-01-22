@@ -97,9 +97,12 @@ def parse_file(filename, month_entry, year_entry):
     TOTAL_DAYS_ON_MARKET = 0
 
     TOTAL_SOLD_DOLLARS = 0
+    AVG_PRICE = 0
 
     TOTAL_SQFT = 0
     TOTAL_SQFT_N = 0
+
+    TOTAL_LISTINGS = 0
 
     user_date = datetime.strptime(str(month_entry.get())+"01"+str(year_entry.get()), "%m%d%y")
 
@@ -119,6 +122,10 @@ def parse_file(filename, month_entry, year_entry):
         #If the status of the home is "Under Contract", it is under contract
         if (row[0] == "Under Contract"):
             UNDER_CONTRACT += 1
+
+        if (row[4] != ""):
+            TOTAL_SQFT += int(row[4])
+            TOTAL_SQFT_N += 1
 
         #Count how many home sold this month
         #Format the "Status date" field using datetime package to easily filter for this month
@@ -150,8 +157,13 @@ def parse_file(filename, month_entry, year_entry):
     AVG_PRICE_SOLD = TOTAL_SOLD_DOLLARS / HOMES_SOLD
     #Calculate average days on market
     AVG_DAYS_ON_MARKET = TOTAL_DAYS_ON_MARKET / HOMES_SOLD
+    #Calculate average price per sqft method 1
+    print(TOTAL_SOLD_DOLLARS)
+    print(TOTAL_SQFT)
+    print(TOTAL_SOLD_DOLLARS/TOTAL_SQFT)
+    #Calculate average price per sqft method 2
+    print((TOTAL_SOLD_DOLLARS/TOTAL_SQFT_N)/(TOTAL_SQFT/TOTAL_SQFT_N))
 
-    #TODO: calculate avg SQFT
 
     result = [FOR_SALE, UNDER_CONTRACT, HOMES_SOLD, LOWEST_PRICE_SOLD, HIGHEST_PRICE_SOLD, AVG_PRICE_SOLD, AVG_DAYS_ON_MARKET, AVG_SQFT]
     return result
