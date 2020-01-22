@@ -2,24 +2,36 @@
 from Tkinter import *
 from tkinter.filedialog import askopenfilename
 import filter
-from filter import FILENAME
 window = Tk()
 window.title("Real Estate Stats")
-window.geometry('400x300')
+window.geometry('350x250')
 
+FILENAME = ""
+filepath = ""
 
 def choose_file_clicked():
-    filename = askopenfilename()
-    path = filename.split('/')
-    filename = path[-1]
-    chosen_file.configure(text=filename)
-    FILENAME = filename
+    global FILENAME
+    global filepath
+
+    for_sale.configure(text = "")
+    under_contract.configure(text = "")
+    homes_sold.configure(text = "")
+    lowest_price_sold.configure(text = "")
+    highest_price_sold.configure(text = "")
+    avg_price_sold.configure(text = "")
+    avg_days_on_market.configure(text = "")
+
+    filepath = askopenfilename()
+    path = filepath.split('/')
+    FILENAME = path[-1]
+    chosen_file.configure(text=FILENAME)
 
 def go_clicked():
-    result = filter.getAll()
+    # print(filepath)
+    result = filter.getAll(filepath)
     for_sale.configure(text = "For Sale: " + str(result[0]))
     under_contract.configure(text = "Under Contract: " + str(result[1]))
-    homes_sold.configure(text = "Homes Sold" + str(result[2]))
+    homes_sold.configure(text = "Homes Sold: " + str(result[2]))
     lowest_price_sold.configure(text = "Lowest Price Sold: $" + str(result[3]))
     highest_price_sold.configure(text = "Highest Price Sold: $" + str(result[4]))
     avg_price_sold.configure(text = "Avergae Price Sold: $" + str(result[5]))
