@@ -99,6 +99,8 @@ def parse_file(filename, month_entry, year_entry):
     TOTAL_SOLD_DOLLARS = 0
     AVG_PRICE = 0
 
+    #SQFT calculation numbers
+    TOTAL_SQFT_DOLLARS = 0
     TOTAL_SQFT = 0
     TOTAL_SQFT_N = 0
 
@@ -118,16 +120,8 @@ def parse_file(filename, month_entry, year_entry):
         if (row[0] == "ACTIVE"):
             FOR_SALE += 1
 
-        #Count how many homes are currently under under contract regardless of date
-        #If the status of the home is "Under Contract", it is under contract
-        if (row[0] == "Under Contract"):
-            UNDER_CONTRACT += 1
 
-        if (row[4] != ""):
-            TOTAL_SQFT += int(row[4])
-            TOTAL_SQFT_N += 1
-
-        #Count how many home sold this month
+        #Count how many homes sold this month
         #Format the "Status date" field using datetime package to easily filter for this month
         try:
             date_object = datetime.strptime(row[5], "%m/%d/%Y")
@@ -137,11 +131,24 @@ def parse_file(filename, month_entry, year_entry):
 
         #Convert the $XXX,XXX format to an integer
         dollars = int(row[2].strip('$').replace(',', ''))
+
+
         #If status is "SOLD" and it happened this month, it is a sold home
         if (row[0] =="SOLD" and date_object.month == user_date.month and date_object.year == user_date.year):
             HOMES_SOLD += 1
             TOTAL_SOLD_DOLLARS += dollars
             TOTAL_DAYS_ON_MARKET += int(row[3])
+            #If the house sold this month, add sqft to total sqft
+            if (row[4] != ""):
+                TOTAL_SQFT_DOLLARS += dollars
+                TOTAL_SQFT += int(row[4])
+                TOTAL_SQFT_N += 1
+
+        #Count how many homes are currently under under contract regarding
+        #If the status of the home is "Under Contract", it is under contract
+        if (row[0] == "Under Contract"and date_object.month == user_date.month and date_object.year == user_date.year):
+            UNDER_CONTRACT += 1
+
 
         #Find the lowest priced sale from this month
         #If the price of this home is lower than the existing lowest, and it is this month in this year, it is the lowest
@@ -159,13 +166,14 @@ def parse_file(filename, month_entry, year_entry):
     AVG_DAYS_ON_MARKET = TOTAL_DAYS_ON_MARKET / HOMES_SOLD
     #Calculate average price per sqft method 1
     print(TOTAL_SOLD_DOLLARS)
+    print(TOTAL_SQFT_DOLLARS)
     print(TOTAL_SQFT)
-    print(TOTAL_SOLD_DOLLARS/TOTAL_SQFT)
+    print(TOTAL_SQFT_DOLLARS/TOTAL_SQFT)
     #Calculate average price per sqft method 2
-    print((TOTAL_SOLD_DOLLARS/TOTAL_SQFT_N)/(TOTAL_SQFT/TOTAL_SQFT_N))
+    print((TOTAL_SQFT_DOLLARS/TOTAL_SQFT_N)/(TOTAL_SQFT/TOTAL_SQFT_N))
 
 
-    result = [FOR_SALE, UNDER_CONTRACT, HOMES_SOLD, LOWEST_PRICE_SOLD, HIGHEST_PRICE_SOLD, AVG_PRICE_SOLD, AVG_DAYS_ON_MARKET, AVG_SQFT]
+    result = [FOR_SALE, UNDER_CONTRACT, HOMES_SOLD, LOWEST_PRICE_SOLD, HIGHEST_PRICE_SOLD, AVG_PRICE_SOLD, AVG_DAYS_ON_MARKET, AVG_PRICE_SQFT, AVG_SQFT]
     return result
 
 #Print it all out
