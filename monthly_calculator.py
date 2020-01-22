@@ -1,11 +1,75 @@
+#!/usr/bin/env python
+from Tkinter import *
+from tkinter.filedialog import askopenfilename
 import csv
 import datetime
 from datetime import datetime
 from datetime import date
 from decimal import Decimal
 
+window = Tk()
+window.title("Real Estate Stats")
+window.geometry('350x250')
+
+FILENAME = ""
+filepath = ""
+
+def choose_file_clicked():
+    global FILENAME
+    global filepath
+
+    for_sale.configure(text = "")
+    under_contract.configure(text = "")
+    homes_sold.configure(text = "")
+    lowest_price_sold.configure(text = "")
+    highest_price_sold.configure(text = "")
+    avg_price_sold.configure(text = "")
+    avg_days_on_market.configure(text = "")
+
+    filepath = askopenfilename()
+    path = filepath.split('/')
+    FILENAME = path[-1]
+    chosen_file.configure(text=FILENAME)
+
+def go_clicked():
+    # print(filepath)
+    result = getAll(filepath) # Excecutes calculator functions below
+    for_sale.configure(text = "For Sale: " + str(result[0]))
+    under_contract.configure(text = "Under Contract: " + str(result[1]))
+    homes_sold.configure(text = "Homes Sold: " + str(result[2]))
+    lowest_price_sold.configure(text = "Lowest Price Sold: $" + str(result[3]))
+    highest_price_sold.configure(text = "Highest Price Sold: $" + str(result[4]))
+    avg_price_sold.configure(text = "Avergae Price Sold: $" + str(result[5]))
+    avg_days_on_market.configure(text = "Average Days on Market: " + str(result[6]))
 
 
+
+
+choose_file_button = Button(window, text="Choose a file", command=choose_file_clicked)
+choose_file_button.grid(column=0, row=0)
+go_button = Button(window, text="Go", command=go_clicked)
+go_button.grid(column=0, row=2)
+chosen_file = Label(window, text="", bg = "white")
+chosen_file.grid(column=1, row=0)
+
+for_sale = Label(window, text="")
+for_sale.grid(column=0, row=3)
+under_contract = Label(window, text="")
+under_contract.grid(column=0, row=4)
+homes_sold = Label(window, text="")
+homes_sold.grid(column=0, row=5)
+lowest_price_sold = Label(window, text="")
+lowest_price_sold.grid(column=0, row=6)
+highest_price_sold = Label(window, text="")
+highest_price_sold.grid(column=0, row=7)
+avg_price_sold = Label(window, text="")
+avg_price_sold.grid(column=0, row=8)
+avg_days_on_market = Label(window, text="")
+avg_days_on_market.grid(column=0, row=9)
+
+
+
+# --- Calculation Functions ---
 
 def parse_file(filename):
     #Final results variables
@@ -50,7 +114,7 @@ def parse_file(filename):
         except:
             date_object = datetime.strptime(row[5], "%m/%d/%y")
 
-        today = date.today()
+        today = date.today() # BUG: Have to be able to choose a month, this way counts incorrectly
         #Convert the $XXX,XXX format to an integer
         dollars = int(row[2].strip('$').replace(',', ''))
         #If status is "SOLD" and it happened this month, it is a sold home
@@ -74,6 +138,8 @@ def parse_file(filename):
     #Calculate average days on market
     AVG_DAYS_ON_MARKET = TOTAL_DAYS_ON_MARKET / HOMES_SOLD
 
+    #TODO: calculate avg SQFT
+
     result = [FOR_SALE, UNDER_CONTRACT, HOMES_SOLD, LOWEST_PRICE_SOLD, HIGHEST_PRICE_SOLD, AVG_PRICE_SOLD, AVG_DAYS_ON_MARKET]
     return result
 
@@ -92,3 +158,11 @@ def getAll(filename):
 
 #Close the csv file
 # file.close()
+
+
+
+
+
+
+
+window.mainloop()
