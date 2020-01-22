@@ -33,7 +33,7 @@ def choose_file_clicked():
 
 def go_clicked():
     # print(filepath)
-    result = getAll(filepath) # Excecutes calculator functions below
+    result = getAll(filepath, month_entry, year_entry) # Excecutes calculator functions below
     for_sale.configure(text = "For Sale: " + str(result[0]))
     under_contract.configure(text = "Under Contract: " + str(result[1]))
     homes_sold.configure(text = "Homes Sold: " + str(result[2]))
@@ -47,31 +47,41 @@ def go_clicked():
 
 choose_file_button = Button(window, text="Choose a file", command=choose_file_clicked)
 choose_file_button.grid(column=0, row=0)
+
+description_label = Label(window, text='MM/YY')
+description_label.grid(column=0, row=2)
+month_entry = Entry(window, width=2)
+month_entry.grid(column=1, row=2)
+slash_label = Label(window, text='/')
+slash_label.grid(column=2, row=2)
+year_entry = Entry(window, width=2)
+year_entry.grid(column=3, row=2)
+
 go_button = Button(window, text="Go", command=go_clicked)
-go_button.grid(column=0, row=2)
+go_button.grid(column=0, row=3)
 chosen_file = Label(window, text="", bg = "white")
 chosen_file.grid(column=1, row=0)
 
 for_sale = Label(window, text="")
-for_sale.grid(column=0, row=3)
+for_sale.grid(column=0, row=4)
 under_contract = Label(window, text="")
-under_contract.grid(column=0, row=4)
+under_contract.grid(column=0, row=5)
 homes_sold = Label(window, text="")
-homes_sold.grid(column=0, row=5)
+homes_sold.grid(column=0, row=6)
 lowest_price_sold = Label(window, text="")
-lowest_price_sold.grid(column=0, row=6)
+lowest_price_sold.grid(column=0, row=7)
 highest_price_sold = Label(window, text="")
-highest_price_sold.grid(column=0, row=7)
+highest_price_sold.grid(column=0, row=8)
 avg_price_sold = Label(window, text="")
-avg_price_sold.grid(column=0, row=8)
+avg_price_sold.grid(column=0, row=9)
 avg_days_on_market = Label(window, text="")
-avg_days_on_market.grid(column=0, row=9)
+avg_days_on_market.grid(column=0, row=10)
 
 
 
 # --- Calculation Functions ---
 
-def parse_file(filename):
+def parse_file(filename, month_entry, year_entry):
     #Final results variables
     FOR_SALE = 0
     UNDER_CONTRACT = 0
@@ -79,6 +89,7 @@ def parse_file(filename):
     AVG_DAYS_ON_MARKET = 0
     AVG_PRICE_SOLD = 0
     AVG_PRICE_SQFT = 0
+    AVG_SQFT = 0
     LOWEST_PRICE_SOLD = 5000000
     HIGHEST_PRICE_SOLD = 0
 
@@ -90,6 +101,8 @@ def parse_file(filename):
     TOTAL_SQFT = 0
     TOTAL_SQFT_N = 0
 
+    user_date = datetime.strptime(str(month_entry.get())+"01"+str(year_entry.get()), "%m%d%y")
+
     file = open(filename)
     csvreader = csv.reader(file)
     #Indecies and their corresponding column headers:
@@ -97,13 +110,13 @@ def parse_file(filename):
     #"Status"     "Listing Office 1 - Office Code"     "Price"     "Days On Market"     "Approx Sq Ft"     "Status Date"
     csvreader.next()
     for row in csvreader:
-        #Count how many homes are currently for sample
+        #Count how many homes are currently for sale regardless of date
         #If the status of the home is "ACTIVE", it is for sale
         if (row[0] == "ACTIVE"):
             FOR_SALE += 1
 
-        #Count how many homes are currently under under contract
-        #If the status of the home is "Under contract", it is under contract
+        #Count how many homes are currently under under contract regardless of date
+        #If the status of the home is "Under Contract", it is under contract
         if (row[0] == "Under Contract"):
             UNDER_CONTRACT += 1
 
@@ -114,23 +127,23 @@ def parse_file(filename):
         except:
             date_object = datetime.strptime(row[5], "%m/%d/%y")
 
-        today = date.today() # BUG: Have to be able to choose a month, this way counts incorrectly
+
         #Convert the $XXX,XXX format to an integer
         dollars = int(row[2].strip('$').replace(',', ''))
         #If status is "SOLD" and it happened this month, it is a sold home
-        if (row[0] =="SOLD" and date_object.month == today.month):
+        if (row[0] =="SOLD" and date_object.month == user_date.month and date_object.year == user_date.year):
             HOMES_SOLD += 1
             TOTAL_SOLD_DOLLARS += dollars
             TOTAL_DAYS_ON_MARKET += int(row[3])
 
         #Find the lowest priced sale from this month
-        #If the price of this home is lower than the existing lowest, and it is this month, it is the lowest
-        if (dollars < LOWEST_PRICE_SOLD and date_object.month == today.month):
+        #If the price of this home is lower than the existing lowest, and it is this month in this year, it is the lowest
+        if (dollars < LOWEST_PRICE_SOLD and date_object.month == user_date.month and date_object.year == user_date.year):
             LOWEST_PRICE_SOLD = dollars
 
         #Find the highest prices sale from this month
-        #If the price of this home is higher than the existing highest, and it is this month, it is the highest
-        if (dollars > HIGHEST_PRICE_SOLD and date_object.month == today.month):
+        #If the price of this home is higher than the existing highest, and it is this month in this year, it is the highest
+        if (dollars > HIGHEST_PRICE_SOLD and date_object.month == user_date.month and date_object.year == user_date.year):
             HIGHEST_PRICE_SOLD = dollars
 
     #Calculate average price sold
@@ -140,7 +153,7 @@ def parse_file(filename):
 
     #TODO: calculate avg SQFT
 
-    result = [FOR_SALE, UNDER_CONTRACT, HOMES_SOLD, LOWEST_PRICE_SOLD, HIGHEST_PRICE_SOLD, AVG_PRICE_SOLD, AVG_DAYS_ON_MARKET]
+    result = [FOR_SALE, UNDER_CONTRACT, HOMES_SOLD, LOWEST_PRICE_SOLD, HIGHEST_PRICE_SOLD, AVG_PRICE_SOLD, AVG_DAYS_ON_MARKET, AVG_SQFT]
     return result
 
 #Print it all out
@@ -152,8 +165,8 @@ def parse_file(filename):
 # print("Average Sold Price: " + str(AVG_PRICE_SOLD))
 # print("Average Days on Market: " + str(AVG_DAYS_ON_MARKET))
 
-def getAll(filename):
-    result = parse_file(filename)
+def getAll(filename, month_entry, year_entry):
+    result = parse_file(filename, month_entry, year_entry)
     return result
 
 #Close the csv file
