@@ -39,7 +39,8 @@ def go_clicked():
     homes_sold.configure(text = "Homes Sold: " + str(result[2]))
     lowest_price_sold.configure(text = "Lowest Price Sold: $" + str(result[3]))
     highest_price_sold.configure(text = "Highest Price Sold: $" + str(result[4]))
-    avg_price_sold.configure(text = "Avergae Price Sold: $" + str(result[5]))
+    avg_price_sold.configure(text = "Average Price Sold: $" + str(result[5]))
+    median_price_sold.configure(text = "Median Price Sold: $" + str(result[9]))
     avg_days_on_market.configure(text = "Average Days on Market: " + str(result[6]))
     avg_price_sqft.configure(text = "Average Price per SqFt: " + str(result[7]))
     avg_sqft.configure(text = "Average SqFt: " + str(result[8]))
@@ -76,12 +77,14 @@ highest_price_sold = Label(window, text="")
 highest_price_sold.grid(column=0, row=8)
 avg_price_sold = Label(window, text="")
 avg_price_sold.grid(column=0, row=9)
+median_price_sold = Label(window, text="")
+median_price_sold.grid(column=0, row=10)
 avg_days_on_market = Label(window, text="")
-avg_days_on_market.grid(column=0, row=10)
+avg_days_on_market.grid(column=0, row=11)
 avg_price_sqft = Label(window, text="")
-avg_price_sqft.grid(column=0, row=11)
+avg_price_sqft.grid(column=0, row=12)
 avg_sqft = Label(window, text="")
-avg_sqft.grid(column=0, row=12)
+avg_sqft.grid(column=0, row=13)
 
 
 
@@ -112,6 +115,8 @@ def parse_file(filename, month_entry, year_entry):
 
     TOTAL_LISTINGS = 0
 
+    MEDIAN = []
+
     month_str = str(month_entry.get())
     if(len(month_str) == 1):
         month_str = "0"+month_str
@@ -119,7 +124,7 @@ def parse_file(filename, month_entry, year_entry):
     year_str = str(year_entry.get())
 
     user_date = datetime.strptime(month_str+"01"+year_str, "%m%d%y")
-    
+
     file = open(filename)
     csvreader = csv.reader(file)
     #Indecies and their corresponding column headers:
@@ -146,10 +151,12 @@ def parse_file(filename, month_entry, year_entry):
 
 
         #If status is "SOLD" and it happened this month, it is a sold home
-        if (row[0] =="SOLD" and date_object.month == user_date.month and date_object.year == user_date.year):
+        if ((row[0] =="SOLD") and date_object.month == user_date.month and date_object.year == user_date.year):
+
             HOMES_SOLD += 1
             TOTAL_SOLD_DOLLARS += dollars
             TOTAL_DAYS_ON_MARKET += int(row[3])
+            MEDIAN.append(dollars)
             #If the house sold this month, add sqft to total sqft
             if (row[4] != ""):
                 TOTAL_SQFT_DOLLARS += dollars
@@ -180,8 +187,10 @@ def parse_file(filename, month_entry, year_entry):
     AVG_SQFT = TOTAL_SQFT/TOTAL_SQFT_N
     AVG_PRICE_SQFT = (TOTAL_SQFT_DOLLARS/TOTAL_SQFT)
 
+    MEDIAN.sort()
+    MEDIAN_PRICE = MEDIAN[int(len(MEDIAN)/2)]
 
-    result = [FOR_SALE, UNDER_CONTRACT, HOMES_SOLD, LOWEST_PRICE_SOLD, HIGHEST_PRICE_SOLD, AVG_PRICE_SOLD, AVG_DAYS_ON_MARKET, AVG_PRICE_SQFT, AVG_SQFT]
+    result = [FOR_SALE, UNDER_CONTRACT, HOMES_SOLD, LOWEST_PRICE_SOLD, HIGHEST_PRICE_SOLD, AVG_PRICE_SOLD, AVG_DAYS_ON_MARKET, AVG_PRICE_SQFT, AVG_SQFT, MEDIAN_PRICE]
     return result
 
 #Print it all out
