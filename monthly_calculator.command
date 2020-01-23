@@ -9,7 +9,7 @@ from decimal import Decimal
 
 window = Tk()
 window.title("Real Estate Stats")
-window.geometry('350x475')
+window.geometry('375x400')
 
 FILENAME = ""
 filepath = ""
@@ -85,6 +85,12 @@ avg_price_sqft = Label(window, text="")
 avg_price_sqft.grid(column=0, row=12)
 avg_sqft = Label(window, text="")
 avg_sqft.grid(column=0, row=13)
+# teststr = "Hellom, world!"
+# text = Text(window, width=len(teststr), height=1)
+# text.grid(column=0, row=14)
+# text.insert(1.0, "Hello, World!")
+# # text.configure(state="disabled")
+
 
 
 
