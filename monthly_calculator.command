@@ -9,7 +9,7 @@ from decimal import Decimal
 
 window = Tk()
 window.title("Real Estate Stats")
-window.geometry('350x450')
+window.geometry('350x475')
 
 FILENAME = ""
 filepath = ""
@@ -112,8 +112,14 @@ def parse_file(filename, month_entry, year_entry):
 
     TOTAL_LISTINGS = 0
 
-    user_date = datetime.strptime(str(month_entry.get())+"01"+str(year_entry.get()), "%m%d%y")
+    month_str = str(month_entry.get())
+    if(len(month_str) == 1):
+        month_str = "0"+month_str
 
+    year_str = str(year_entry.get())
+
+    user_date = datetime.strptime(month_str+"01"+year_str, "%m%d%y")
+    
     file = open(filename)
     csvreader = csv.reader(file)
     #Indecies and their corresponding column headers:
